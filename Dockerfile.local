@@ -10,7 +10,7 @@ ENV PORT 3000
 
 # Install app dependencies
 COPY src/package.json /app
-RUN npm install
+RUN apk --no-cache add --virtual builds-deps build-base python && npm install
 
 # Bundle app source
 COPY src/ /app
