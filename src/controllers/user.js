@@ -7,7 +7,7 @@ const bcrypt = require('bcrypt');
 exports.authenticateUser = (req, res, next) => {
     let body = req.body; // parse body request
     let {email, pass} = body;
-    User.find(email)
+    User.find({email})
         .then(userDB => {
             // Check if user exists
             if (!userDB) {
