@@ -1,8 +1,7 @@
 const User = require('../models/user');
-let conf = require('../config/config');
 
 // =====================
-// Check credit
+// Authenticate user
 // =====================
 exports.authenticateUser = (req, res, next) => {
     let body = req.body; // parse body request
@@ -30,6 +29,25 @@ exports.authenticateUser = (req, res, next) => {
                     ...userWithoutPassword,
                     token
                 }
+            });
+        })
+        .catch(err => {
+            // Return error response
+            err.status = 500;
+            next(err);
+        });
+};
+
+// =====================
+// Get all users
+// =====================
+exports.getUsers = (req, res, next) => {
+    User.find()
+        .then(users => {
+            // Return users
+            return res.json({
+                ok: true,
+                data: users
             });
         })
         .catch(err => {
