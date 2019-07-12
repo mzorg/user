@@ -5,6 +5,11 @@
 process.env.SEED = process.env.SEED || 'este-es-el-seed-desarrollo';
 
 // ============================
+//  Expiracion de token
+// ============================
+process.env.TOKEN_EXPIRATION = process.env.TOKEN_EXPIRATION || '48h';
+
+// ============================
 //  Base de datos
 // ============================
 let urlDB;

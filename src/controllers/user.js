@@ -1,28 +1,33 @@
 const User = require('../models/user');
+const bcrypt = require('bcrypt');
 
 // =====================
 // Authenticate user
 // =====================
 exports.authenticateUser = (req, res, next) => {
     let body = req.body; // parse body request
-    let {email, password} = body;
+    let {email, pass} = body;
     User.find(email)
-        .then(user => {
+        .then(userDB => {
             // Check if user exists
-            if (!user) {
+            if (!userDB) {
                 let err = new Error("User or password incorrect");
                 err.status = 401;
                 next(err);
             }
             // Check if password is correct
-            if (user.password !== password) {
+            if (!bcrypt.compareSync(userDB.password, pass)) {
                 let err = new Error("User or password incorrect");
                 err.status = 401;
                 next(err);
             }
             // Return user
-            const token = jwt.sign({ id: user.id, email: user.email, role: user.role.name }, process.env.SEED);
-            const { password, ...userWithoutPassword } = user;
+            const token = jwt.sign({
+                id: userDB.id,
+                email: userDB.email,
+                role: userDB.role.name
+            }, process.env.SEED, { expiresIn: process.env.TOKEN_EXPIRATION });
+            const { password, ...userWithoutPassword } = userDB;
             return res.json({
                 ok: true,
                 data: {
@@ -42,7 +47,7 @@ exports.authenticateUser = (req, res, next) => {
 // Get all users
 // =====================
 exports.getUsers = (req, res, next) => {
-    User.find()
+    User.find({}, 'email')
         .then(users => {
             // Return users
             return res.json({
