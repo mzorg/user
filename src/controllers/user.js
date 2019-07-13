@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const Role = require('../models/role');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -9,6 +10,7 @@ exports.authenticateUser = (req, res, next) => {
     let body = req.body; // parse body request
     let {email, pass} = body;
     User.findOne({email})
+        .populate('role')
         .then(userDB => {
             // Check if user exists
             if (!userDB) {
