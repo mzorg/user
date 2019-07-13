@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 // =====================
 // Authenticate user
@@ -7,7 +8,7 @@ const bcrypt = require('bcrypt');
 exports.authenticateUser = (req, res, next) => {
     let body = req.body; // parse body request
     let {email, pass} = body;
-    User.find({email})
+    User.findOne({email})
         .then(userDB => {
             // Check if user exists
             if (!userDB) {
@@ -27,11 +28,12 @@ exports.authenticateUser = (req, res, next) => {
                 email: userDB.email,
                 role: userDB.role.name
             }, process.env.SEED, { expiresIn: process.env.TOKEN_EXPIRATION });
-            const { password, ...userWithoutPassword } = userDB;
+            userDB = userDB.toObject(); // mongoose object to json
+            delete userDB.password; // hide password from response
             return res.json({
                 ok: true,
                 data: {
-                    ...userWithoutPassword,
+                    user: userDB,
                     token
                 }
             });
