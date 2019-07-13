@@ -51,12 +51,32 @@ exports.authenticateUser = (req, res, next) => {
 // Get all users
 // =====================
 exports.getUsers = (req, res, next) => {
-    User.find({}, 'email')
+    User.find({}, 'email role')
         .then(users => {
             // Return users
             return res.json({
                 ok: true,
                 data: users
+            });
+        })
+        .catch(err => {
+            // Return error response
+            err.status = 500;
+            next(err);
+        });
+};
+
+// =====================
+// Get a user
+// =====================
+exports.getUser = (req, res, next) => {
+    let userId = req.params.id;
+    User.findById(userId, 'email role')
+        .then(user => {
+            // Return users
+            return res.json({
+                ok: true,
+                data: user
             });
         })
         .catch(err => {
